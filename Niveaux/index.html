@@ -13,6 +13,39 @@
   <a href="#settings"><i class="fas fa-cog"></i><span>Réglages</span></a>
       <a href="#logout"><i class="fas fa-right-to-bracket"></i><span>Déconnexion</span></a>
 </div>
+    <div class="button-grid">
+  <a href="page1.html" class="grid-button">Page 1</a>
+  <a href="page2.html" class="grid-button">Page 2</a>
+  <a href="page3.html" class="grid-button">Page 3</a>
+  <a href="page4.html" class="grid-button">Page 4</a>
+</div>
+    <style>
+.button-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 2fr);
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.grid-button {
+  display: block;
+  background-color: #2196F3;
+  color: white;
+  text-align: center;
+  padding: 16px 0;
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  transition: background 0.2s;
+  height: 100px
+  width: 100px;
+}
+
+.grid-button:hover {
+  background-color: #1769aa;
+}
+</style>
     <style>
       .bottom-navbar {
   position: fixed;
