@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+<base target="_top">
+<title>Connexion</title>
+<style>
+  body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #f0f0f0; }
+  .container { background-color: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+  input[type="text"], input[type="password"] { width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+  input[type="submit"] { background-color: #4CAF50; color: white; padding: 12px 20px; border: none; border-radius: 4px; cursor: pointer; width: 100%; }
+  input[type="submit"]:hover { background-color: #45a049; }
+  .message { margin-top: 15px; text-align: center; color: red; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Connexion</h2>
+  <form id="loginForm">
+    <label for="username">Nom d'utilisateur:</label><br>
+    <input type="text" id="username" name="username" required><br>
+    <label for="password">Mot de passe:</label><br>
+    <input type="password" id="password" name="password" required><br><br>
+    <input type="submit" value="Se connecter">
+  </form>
+  <div id="responseMessage" class="message"></div>
+</div>
+
+<script>
+  // Fonction asynchrone pour hacher une chaîne en SHA-256
+  async function hashStringSHA256(str) {
+    const textEncoder = new TextEncoder();
+    const data = textEncoder.encode(str);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hexHash;
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', async function(e) { // Ajoute 'async' ici
+    e.preventDefault();
+
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+
+    document.getElementById('responseMessage').innerText = "Hachage du mot de passe...";
+    document.getElementById('responseMessage').style.color = "blue";
+
+    // Hachage du mot de passe en SHA-256
+    const hashedPassword = await hashStringSHA256(password); // Utilise 'await'
+
+    document.getElementById('responseMessage').innerText = "Envoi des informations...";
+
+    // On envoie les données à notre fonction Apps Script
+    google.script.run
+      .withSuccessHandler(function(response) {
+        document.getElementById('responseMessage').innerText = response;
+        if (response === "Connexion réussie !") {
+          document.getElementById('responseMessage').style.color = "green";
+          // Ici, tu pourrais rediriger l'utilisateur ou charger du contenu
+        } else {
+          document.getElementById('responseMessage').style.color = "red";
+        }
+      })
+      .withFailureHandler(function(error) {
+        document.getElementById('responseMessage').innerText = "Erreur: " + error.message;
+        document.getElementById('responseMessage').style.color = "red";
+      })
+      .processLogin(username, hashedPassword);
+  });
+</script>
+</body>
+</html>
